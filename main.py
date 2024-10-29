@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-
 # Telegram bot for Craiyon Image generator
 # Github : https://github.com/Kourva/CraiyonBot
-
 
 # Imports
 import requests
@@ -12,15 +10,11 @@ import base64
 import json
 import os
 
-
-# Config
-with open("token.env", "r") as config:
-    Token = config.read().strip().split("=")[1]
-
+# Token (replace this with your actual bot token)
+Token = "7663625947:AAEi-8ywV_oWt9LoLugowF2obO6tRq2CgKU"  # Use the actual bot token here
 
 # Client
 bot = telebot.TeleBot(Token)
-
 
 # User class: which creates a member with needed stuff.
 class User:
@@ -30,7 +24,6 @@ class User:
         self.lname = message.from_user.last_name
         self.uname = message.from_user.username
         self.usrid = message.from_user.id
-
 
 # Craiyon class: which creates images using craiyon
 class Craiyon:
@@ -48,26 +41,24 @@ class Craiyon:
             result = response.json()["images"]
 
             for index, image in enumerate(result, start=1):
+                if not os.path.exists("generated"):
+                    os.makedirs("generated")
                 with open(f"generated/{self.prompt}_{index}.webp", "wb") as file:
                     file.write(base64.decodebytes(image.encode("utf-8")))
 
         except Exception as ex:
             return False
 
-
 ## LOCKER
 status = False
-
 
 def lock():
     global status
     status = True
 
-
 def unlock():
     global status
     status = False
-
 
 # Start command: will be executed when /start pressed.
 @bot.message_handler(commands=["start"])
@@ -78,7 +69,6 @@ def start_command(message):
 
     # Send hello message
     bot.reply_to(message, "Hi. Use 'ai your text' to generate images")
-
 
 # Craiyon image generator
 @bot.message_handler(func=lambda message: message.text.startswith("ai"))
@@ -91,10 +81,9 @@ def craiyon_generator(message):
         name = user.fname if user.fname is not None else f"Unknown User"
 
         # Sends waiting prompt
-        temp = bot.reply_to(message, "Please wait. It can up to 3 minutes")
+        temp = bot.reply_to(message, "Please wait. It can take up to 3 minutes")
 
         # Sets variables
-        images = []
         usrmsg = message.text.split("ai")[1]
 
         # Deletes old images (if any)
@@ -119,10 +108,8 @@ def craiyon_generator(message):
             print(f"sent images to User '{name}' ({user.usrid})")
 
         unlock()
-
     else:
         bot.reply_to(message, "Another user is using this feature. wait...")
-
 
 # Runs the bot in infinity mode
 if __name__ == "__main__":
