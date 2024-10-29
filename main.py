@@ -14,7 +14,7 @@ import os
 Token = "7663625947:AAEi-8ywV_oWt9LoLugowF2obO6tRq2CgKU"  # Use the actual bot token here
 
 # Client
-bot = telebot.TeleBot(Token)
+bot = telebot.TeleBot('Token')
 
 # User class: which creates a member with needed stuff.
 class User:
